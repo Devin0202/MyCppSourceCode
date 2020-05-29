@@ -1,0 +1,148 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.facerecg";
+option java_outer_classname = "FaceRecgProto";
+option objc_class_prefix = "FAR";
+
+package facerecg;
+
+/** LTWH infomation for a rectangle.
+ *  Each member is an absolute coordinate.
+ */
+message AbsRect {
+    int32 left = 1;
+    int32 top = 2;
+    int32 width = 3;
+    int32 height = 4;
+}
+
+/**
+ *  The request message for validation.
+ */
+message LogRequest {
+    string username = 1;
+    string userpwd = 2;
+    string message = 3;
+    int32 configure = 4;
+}
+
+/**
+ *  The response message containing the algorithm's veriosn.
+ */
+message LogReply {
+    string message = 1;
+    string algversion = 2;
+}
+
+/**
+ *  The face recognizing service definition.
+ */
+service Frecg {
+    rpc logIn (LogRequest) returns (LogReply) {}
+    rpc featureExtract (FeatureRequest) returns (FeatureReply) {}
+    rpc featureDetect (DetectRequest) returns (FeatureReply) {}
+    rpc compareFeature (CmpFeatureRequest) returns (CmpFeatureReply) {}
+    rpc compareImage (CmpImageRequest) returns (CmpImageReply) {}
+    rpc getFaceQuality (QualityRequest) returns (QualityReply) {}
+}
+
+/**
+ *  The response message containing the face features.
+ */
+message FeatureReply {
+    repeated float features = 1;
+    repeated AbsRect rects = 2;
+    string message = 3;
+    float costInMs = 4;
+}
+
+/**
+ *  The request message containing the single image.
+ *  With prepared faces rect rois.
+ */
+message FeatureRequest {
+    bytes imageData = 1;
+    repeated AbsRect rects = 2;
+    string message = 3;
+}
+
+/**
+ *  The request message containing the single image.
+ */
+ message DetectRequest {
+    bytes imageData = 1;
+    string message = 2;
+}
+
+/**
+ *  The request message containing two feature vector.
+ */
+ message CmpFeatureRequest {
+    repeated float featureA = 1;
+    repeated float featureB = 2;
+    string message = 3;
+}
+
+/**
+ *  The response message containing score of two features.
+ */
+ message CmpFeatureReply {
+    float resemblance = 1;
+    string message = 2;
+}
+
+/**
+ *  The request message containing two images.
+ *  With prepared faces rect rois.
+ */
+ message CmpImageRequest {
+    bytes imageDataA = 1;
+    bytes imageDataB = 2;
+    AbsRect rectA = 3;
+    AbsRect rectB = 4;
+    string message = 5;
+}
+
+/**
+ *  The response message containing score of two images.
+ */
+ message CmpImageReply {
+    float resemblance = 1;
+    string message = 2;
+}
+
+/**
+ *  The response message containing quality scores of all rois
+ *  and information about whether there are frontal faces in rois.
+ */
+ message QualityReply {
+    repeated int32 quality = 1;
+    repeated bool isfrontal = 2;
+    string message = 3;
+    float costInMs = 4;
+}
+
+/**
+ *  The request message containing single image.
+ *  With prepared faces rect rois.
+ */
+message QualityRequest {
+    bytes imageData = 1;
+    repeated AbsRect rects = 2;
+    string message = 3;
+}
