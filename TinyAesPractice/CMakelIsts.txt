@@ -1,0 +1,7 @@
+project(PlayGround)
+
+cmake_minimum_required(VERSION 3.17)
+
+include_directories(tiny_aes)
+
+add_executable(my_aes my_aes.cc tiny_aes/aes.c)
